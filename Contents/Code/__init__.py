@@ -146,7 +146,7 @@ class StashPlexAgent(Agent.Movies):
                 if Prefs["RequireOrganized"] and data["organized"] or not Prefs["RequireOrganized"]:
                     if DEBUG and Prefs["RequireOrganized"]:
                         Log("Passed 'Organized' Check for Search Matching, sending search results to plex...")
-                        results.Append(MetadataSearchResult(id = str(scene['id']), name = title, score = int(score), lang = lang))
+                    results.Append(MetadataSearchResult(id = str(scene['id']), name = title, score = int(score), lang = lang))
                 else:
                     Log("Failed 'Organized' Check for Search Matching, stopping.")
 
