@@ -136,7 +136,19 @@ class StashPlexAgent(Agent.Movies):
                 Log("Title Found: " + title + " Score: " + str(score) + " ID:" + scene['id'])
                 if Prefs['UseFormattedTitle']:
                     title = FormattedTitle(scene, title)
-                results.Append(MetadataSearchResult(id = str(scene['id']), name = title, score = int(score), lang = lang))
+
+                # Just for testing, put in a section for grabbing the tags from the scene id, and then query those for the organized flag before performing the search and sending results back to plex
+                mid = scene['id']
+                id_query = "query{findScene(id:%s){id,title,details,url,date,rating100,paths{screenshot,stream}movies{movie{id,name}}studio{id,name,image_path,parent_studio{id,name,details}}organized,stash_ids{stash_id}tags{id,name}performers{name,image_path,tags{id,name}}movies{movie{name}}galleries{id,title,url}}}"
+                data = HttpReq(id_query % mid)
+                data = data['data']['findScene']
+
+                if Prefs["RequireOrganized"] and data["organized"] or not Prefs["RequireOrganized"]:
+                    if DEBUG and Prefs["RequireOrganized"]:
+                        Log("Passed 'Organized' Check for Search Matching, sending search results to plex...")
+                        results.Append(MetadataSearchResult(id = str(scene['id']), name = title, score = int(score), lang = lang))
+                else:
+                    Log("Failed 'Organized' Check for Search Matching, stopping.")
 
 
     def update(self, metadata, media, lang, force=False):
